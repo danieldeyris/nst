@@ -64,6 +64,7 @@
         'phi_purchase_supplierinfo_perqty',
         #'account_move_csv_import',
         'purchase_vendorbill_advance',
+        'purchase_vendorbill_advance_proportionnal',
     ],
     "data": [
         'views/crm_lead_views.xml',
