@@ -1,0 +1,68 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* phi_sale_validation_for_logistic
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-02-04 18:44+0000\n"
+"PO-Revision-Date: 2022-02-04 18:44+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: phi_sale_validation_for_logistic
+#: model_terms:ir.ui.view,arch_db:phi_sale_validation_for_logistic.view_order_form_confirm_for_shipment
+msgid "Confirm Shipment"
+msgstr "Confirmer Expédition"
+
+#. module: phi_sale_validation_for_logistic
+#: model_terms:ir.ui.view,arch_db:phi_sale_validation_for_logistic.view_order_form_confirm_for_shipment
+msgid "Create Invoice"
+msgstr "Créer facture"
+
+#. module: phi_sale_validation_for_logistic
+#: model:ir.model.fields,field_description:phi_sale_validation_for_logistic.field_sale_order__display_name
+msgid "Display Name"
+msgstr "Nom affiché"
+
+#. module: phi_sale_validation_for_logistic
+#: model:ir.model.fields,field_description:phi_sale_validation_for_logistic.field_sale_order__id
+msgid "ID"
+msgstr ""
+
+#. module: phi_sale_validation_for_logistic
+#: code:addons/phi_sale_validation_for_logistic/models/sale.py:0
+#, python-format
+msgid "It is not allowed to confirm an order in the following states: %s"
+msgstr ""
+
+#. module: phi_sale_validation_for_logistic
+#: model:ir.model.fields,field_description:phi_sale_validation_for_logistic.field_sale_order____last_update
+msgid "Last Modified on"
+msgstr "Dernière modification le"
+
+#. module: phi_sale_validation_for_logistic
+#: model:ir.model.fields.selection,name:phi_sale_validation_for_logistic.selection__sale_order__state__ready
+#: model_terms:ir.ui.view,arch_db:phi_sale_validation_for_logistic.sale_order_view_search_confirm_shipment
+msgid "Ready"
+msgstr "Prête"
+
+#. module: phi_sale_validation_for_logistic
+#: model:ir.model,name:phi_sale_validation_for_logistic.model_sale_order
+msgid "Sales Order"
+msgstr "Bon de commande"
+
+#. module: phi_sale_validation_for_logistic
+#: model:ir.model.fields,field_description:phi_sale_validation_for_logistic.field_sale_order__state
+msgid "Status"
+msgstr "Statut"
+
+#. module: phi_sale_validation_for_logistic
+#: model:res.groups,name:phi_sale_validation_for_logistic.group_quotation_validation_for_shipment
+msgid "Validate order for shipment"
+msgstr "Valider Commande pour expédition"

@@ -1,0 +1,33 @@
+<odoo>
+  <data>
+    <record id="view_order_form_confirm_for_shipment" model="ir.ui.view">
+      <field name="name">view_order_form_confirm_shipment</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <xpath expr="//button[@name='action_cancel']" position="attributes">
+          <attribute name="states">draft,sent,sale,ready</attribute>
+        </xpath>
+
+        <xpath expr="//button[@name='action_cancel']" position="before">
+            <button name="328" string="Create Invoice" type="action" context="{'default_advance_payment_method': 'percentage'}" attrs="{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', '!=', 'ready')]}"/>
+            <button name="action_validation" id="action_validation" string="Confirm Shipment" class="btn-primary" type="object" attrs="{'invisible': [('state', 'not in', ['ready'])]}" groups="phi_sale_validation_for_logistic.group_quotation_validation_for_shipment"/>
+        </xpath>
+       </field>
+    </record>
+
+  <record id="sale_order_view_search_confirm_shipment" model="ir.ui.view">
+      <field name="name">sale_order_view_search_confirm_shipment</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <xpath expr="//filter[@name='sales']" position="after">
+          <filter domain="[['state','=','ready']]" name="filter_ready" string="Ready"/>
+        </xpath>
+       </field>
+    </record>
+
+  </data>
+</odoo>
