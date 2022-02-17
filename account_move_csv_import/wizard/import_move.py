@@ -715,8 +715,7 @@ class AccountMoveImport(models.TransientModel):
             if len(partners) > 1:
                 logger.warning(
                     "Skip reconcile of ref '%s' because the lines with "
-                    "this ref have different partners (IDs %s)",
-                    rec_ref, ', '.join(partners.keys()))
+                    "this ref have different partners ")
                 continue
             lines_to_rec.reconcile()
         logger.info('Reconcile imported moves finished')
