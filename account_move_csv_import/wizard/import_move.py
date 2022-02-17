@@ -266,7 +266,7 @@ class AccountMoveImport(models.TransientModel):
         fieldnames = [
             'journal',        # JournalCode
             False,            # JournalLib
-            False,            # EcritureNum
+            'EcritureNum',    # EcritureNum
             'date',           # EcritureDate
             'account',        # CompteNum
             False,            # CompteLib
@@ -293,22 +293,34 @@ class AccountMoveImport(models.TransientModel):
             encoding=self.file_encoding)
         res = []
         i = 0
+        ecriture_num = False
         for l in reader:
             i += 1
             # Skip header line
             if i == 1:
                 continue
+            if not ecriture_num or ecriture_num != l["EcritureNum"]:
+                date_ecriture = datetime.strptime(l['date'], '%Y%m%d')
+                ecriture_num = l["EcritureNum"]
             l['credit'] = l['credit'] or '0'
             l['debit'] = l['debit'] or '0'
+            credit = float(l['credit'].replace(',', '.'))
+            debit = float(l['debit'].replace(',', '.'))
+            if credit < 0:
+                debit = credit * -1
+                credit = 0
+            if debit < 0:
+                credit = debit * -1
+                debit = 0
             vals = {
                 'journal': l['journal'],
                 'account': l['account'],
                 'partner': l['partner_ref'],
-                'credit': float(l['credit'].replace(',', '.')),
-                'debit': float(l['debit'].replace(',', '.')),
-                'date': datetime.strptime(l['date'], '%Y%m%d'),
+                'credit': credit,
+                'debit': debit,
+                'date': date_ecriture,
                 'name': l['name'],
-                'ref': l['ref'],
+                'ref': l['EcritureNum'],
                 'reconcile_ref': l['reconcile_ref'],
                 'line': i,
             }
