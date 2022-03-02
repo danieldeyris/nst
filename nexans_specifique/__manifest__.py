@@ -13,7 +13,7 @@
     'author': "Phidias",
     'website': "http://www.phidias.fr",
     'category': 'Uncategorized',
-    'version': '14.0.0.25',
+    'version': '14.0.0.27',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -64,8 +64,10 @@
         'phi_purchase_supplierinfo_perqty',
         'account_move_csv_import',
         'purchase_vendorbill_advance',
+        'purchase_vendorbill_advance_proportionnal',
         'purchase_force_invoiced',
         'sale_force_invoiced',
+        'phi_sale_downpayment_proportionnal',
     ],
     "data": [
         'views/crm_lead_views.xml',
