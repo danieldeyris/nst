@@ -333,7 +333,7 @@ class AnalyticCashflowReport(models.AbstractModel):
             field = 'amount_out'
             field_class = 'number'
         elif type_line == 'real_invoices_out':
-            columns = [{'name': ''},{'name': ''}, {'name': ("%s - %s") % (analytic_entries[0].purchase_id.name, analytic_entries[0].purchase_id.partner_id.name )}]
+            columns = [{'name': ''},{'name': ''}, {'name': ("%s - %s") % (analytic_entries[0].invoice_id.name, analytic_entries[0].invoice_id.partner_id.name )}]
             field = 'amount_out'
             field_class = 'number'
         elif type_line == 'real_analytis_lines_out':
