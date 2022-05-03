@@ -4,54 +4,117 @@
     <record id="product_template_view_form_purchase_price_index" model="ir.ui.view">
         <field name="name">product.template.view.form.purchase.price.index</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_only_form_view" />
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
-          <xpath expr="//field[@name='purchase_method']" position="after">
-            <field name="purchase_price_index"/>
-          </xpath>
+            <xpath expr="//field[@name='purchase_method']" position="after">
+                <field name="purchase_price_index"/>
+            </xpath>
         </field>
     </record>
 
     <record id="product_supplierinfo_view_form_purchase_price_index" model="ir.ui.view">
         <field name="name">product.supplierinfo.view.form.purchase.price.index</field>
         <field name="model">product.supplierinfo</field>
-        <field name="inherit_id" ref="product.product_supplierinfo_form_view" />
+        <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
         <field name="arch" type="xml">
-          <xpath expr="//field[@name='company_id']" position="after">
-            <field name="purchase_price_index" invisible="1"/>
-            <field name="portion_meps" attrs="{'invisible': [('purchase_price_index', '=', False)]}"/>
-            <field name="portion_mo" attrs="{'invisible': [('purchase_price_index', '=', False)]}"/>
-            <field name="portion_lme" attrs="{'invisible': [('purchase_price_index', '=', False)]}"/>
-            <field name="purchase_index_id" attrs="{'invisible': [('purchase_price_index', '=', False)]}" readonly="1"/>
-          </xpath>
-          <xpath expr="//field[@name='date_start']" position="attributes">
-            <attribute name="attrs">{"readonly": [["purchase_price_index","=",True]]}</attribute>
-          </xpath>
-          <xpath expr="//field[@name='date_end']" position="attributes">
-            <attribute name="attrs">{"readonly": [["purchase_price_index","=",True]]}</attribute>
-          </xpath>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="purchase_price_index" invisible="1"/>
+                <field name="is_first_price_index" invisible="1"/>
+                <field name="portion_meps" optional="hide" readonly="1" force_save="1"/>
+                <field name="portion_mo" optional="hide" readonly="1" force_save="1"/>
+                <field name="portion_lme" optional="hide" readonly="1" force_save="1"/>
+                <field name="portion_meps_price"
+                       attrs="{'readonly': [('is_first_price_index', '=', False)], 'invisible': [('purchase_price_index', '=', False)] }"/>
+                <field name="portion_mo_price"
+                       attrs="{'readonly': [('is_first_price_index', '=', False)], 'invisible': [('purchase_price_index', '=', False)] }"/>
+                <field name="portion_lme_price"
+                       attrs="{'readonly': [('is_first_price_index', '=', False)], 'invisible': [('purchase_price_index', '=', False)] }"/>
+                <field name="purchase_index_id"
+                       attrs="{'readonly': [('is_first_price_index', '=', False)], 'invisible': [('purchase_price_index', '=', False)] }"/>
+            </xpath>
+            <xpath expr="//field[@name='date_start']" position="attributes">
+                <attribute name="attrs">{'readonly': [("purchase_price_index","=",True)], 'invisible':
+                    [('purchase_price_index', '=', False)] }
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_end']" position="attributes">
+                <attribute name="attrs">{'readonly': [("purchase_price_index","=",True)], 'invisible':
+                    [('purchase_price_index', '=', False)] }
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_start']" position="attributes">
+                <attribute name="attrs">{"readonly": [("purchase_price_index","=",True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_end']" position="attributes">
+                <attribute name="attrs">{"readonly": [("purchase_price_index","=",True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="attrs">{"readonly": [("is_first_price_index","!=",True),('purchase_price_index', '=',
+                    True)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='currency_id']" position="attributes">
+                <attribute name="attrs">{"readonly": [("is_first_price_index","!=",True),('purchase_price_index', '=',
+                    True)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='min_qty']" position="attributes">
+                <attribute name="attrs">{"readonly": [("is_first_price_index","!=",True),('purchase_price_index', '=',
+                    True)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='price']" position="attributes">
+                <attribute name="attrs">{"readonly": [("is_first_price_index","!=",True)]}</attribute>
+            </xpath>
         </field>
     </record>
 
     <record id="product_supplierinfo_tree_purchase_price_index" model="ir.ui.view">
-            <field name="name">product.supplierinfo.tree.purchase.price.index</field>
-            <field name="model">product.supplierinfo</field>
-            <field name="inherit_id" ref="product.product_supplierinfo_tree_view"/>
-            <field name="arch" type="xml">
-              <xpath expr="//field[@name='price']" position="after">
+        <field name="name">product.supplierinfo.tree.purchase.price.index</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="product.product_supplierinfo_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price']" position="after">
                 <field name="purchase_price_index" invisible="1"/>
-                <field name="portion_meps" optional="show" attrs="{'readonly': [('purchase_price_index', '=', False)], 'invisible': [('purchase_price_index', '=', False)] }" />
-                <field name="portion_mo" optional="show" attrs="{'readonly': [('purchase_price_index', '=', False)], 'invisible': [('purchase_price_index', '=', False)] }"/>
-                <field name="portion_lme" optional="show" attrs="{'readonly': [('purchase_price_index', '=', False)], 'invisible': [('purchase_price_index', '=', False)] }"/>
-                <field name="purchase_index_id" optional="hide" attrs="{'readonly': [('purchase_price_index', '=', False)], 'invisible': [('purchase_price_index', '=', False)] }"  readonly="1"/>
-              </xpath>
-              <xpath expr="//field[@name='date_start']" position="attributes">
-                <attribute name="attrs">{"readonly": [["purchase_price_index","=",True]]}</attribute>
-              </xpath>
-              <xpath expr="//field[@name='date_end']" position="attributes">
-                <attribute name="attrs">{"readonly": [["purchase_price_index","=",True]]}</attribute>
-              </xpath>
-            </field>
-        </record>
+                <field name="is_first_price_index" invisible="1"/>
+                <field name="portion_meps" optional="hide" readonly="1" force_save="1"/>
+                <field name="portion_mo" optional="hide" readonly="1" force_save="1"/>
+                <field name="portion_lme" optional="hide" readonly="1" force_save="1"/>
+                <field name="portion_meps_price" optional="show"
+                       attrs="{'readonly': [('is_first_price_index', '=', False)], 'invisible': [('purchase_price_index', '=', False)] }"/>
+                <field name="portion_mo_price" optional="show"
+                       attrs="{'readonly': [('is_first_price_index', '=', False)], 'invisible': [('purchase_price_index', '=', False)] }"/>
+                <field name="portion_lme_price" optional="show"
+                       attrs="{'readonly': [('is_first_price_index', '=', False)], 'invisible': [('purchase_price_index', '=', False)] }"/>
+                <field name="purchase_index_id" optional="hide"
+                       attrs="{'readonly': [('is_first_price_index', '=', False)], 'invisible': [('purchase_price_index', '=', False)] }"/>
+            </xpath>
+            <xpath expr="//field[@name='date_start']" position="attributes">
+                <attribute name="attrs">{"readonly": [("purchase_price_index","=",True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_end']" position="attributes">
+                <attribute name="attrs">{"readonly": [("purchase_price_index","=",True)]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="attrs">{"readonly": [("is_first_price_index","!=",True),('purchase_price_index', '=',
+                    True)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='currency_id']" position="attributes">
+                <attribute name="attrs">{"readonly": [("is_first_price_index","!=",True),('purchase_price_index', '=',
+                    True)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='min_qty']" position="attributes">
+                <attribute name="attrs">{"readonly": [("is_first_price_index","!=",True),('purchase_price_index', '=',
+                    True)]}
+                </attribute>
+            </xpath>
+            <xpath expr="//field[@name='price']" position="attributes">
+                <attribute name="attrs">{"readonly": [("is_first_price_index","!=",True)]}
+                </attribute>
+            </xpath>
+        </field>
+    </record>
 
 </odoo>

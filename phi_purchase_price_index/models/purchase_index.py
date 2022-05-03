@@ -24,25 +24,26 @@ class PurchaseIndex(models.Model):
         ('unique_date', 'unique (date_from)', 'La date doit être unique')
     ]
 
+    def update_products_prices(self):
+        products_index = self.env["product.template"].search([('purchase_price_index', '=', True)])
+        for product in products_index:
+            product.update_price_index()
+
     @api.model
     def create(self, vals):
-        index_draft = self.env["phi_purchase_price_index.purchase.index"].search([('state', '=', 'draft')])
-        # if len(index_draft) > 0:
-        #     raise UserError(_('Il existe un autre index en brouillon, vous devez le valider avant de créer un nouvel index.'))
-        current_index = self._get_current_index()
-        if isinstance(vals["date_from"], str):
-            date = datetime.strptime(vals["date_from"], '%Y-%m-%d').date()
-        else:
-            date = vals["date_from"]
-        if current_index.date_from and current_index.date_from > date:
-            raise UserError(_("Vous devez créer un index avec une date supérieure à l'index en cours % s" % current_index.date_from))
-        return super(PurchaseIndex, self).create(vals)
+        res = super(PurchaseIndex, self).create(vals)
+        self.update_products_prices()
+        return res
 
     def unlink(self):
-        for index in self:
-            if index.state == 'done':
-                raise UserError(_('Vous ne pouvez pas supprimer un index validé'))
-        return super(PurchaseIndex, self).unlink()
+        res = super(PurchaseIndex, self).unlink()
+        self.update_products_prices()
+        return res
+
+    def write(self, vals):
+        result = super(PurchaseIndex, self).write(vals)
+        self.update_products_prices()
+        return result
 
     def copy(self, default=None):
         default = dict(default or {})
@@ -66,24 +67,40 @@ class PurchaseIndex(models.Model):
         if seller.purchase_index_id:
             return self._calculate_index_evolution(seller, self)
         else:
-            return seller.price
+            return {
+                'price': seller.price,
+                'part_meps': 0,
+                'part_mo': 0,
+                'part_lme': 0,
+            }
 
     @staticmethod
     def _calculate_index_evolution(seller_from, index_to, index_from=False):
         if not index_from:
             index_from = seller_from.purchase_index_id
         if not index_from or not index_to:
-            return seller_from.price
-        part_meps = seller_from.price * seller_from.portion_meps / 100 / index_from.index_meps * index_to.index_meps if index_from.index_meps else 0
-        part_mo = seller_from.price * seller_from.portion_mo / 100 / index_from.index_mo * index_to.index_mo if index_from.index_mo else 0
-        part_lme = seller_from.price * seller_from.portion_lme / 100 / index_from.index_lme * index_to.index_lme if index_from.index_lme else 0
+            return  {
+                'price': seller_from.price,
+                'part_meps': 0,
+                'part_mo': 0,
+                'part_lme': 0,
+            }
+        part_meps = seller_from.portion_meps_price * index_to.index_meps / index_from.index_meps if index_from.index_meps else 0
+        part_mo = seller_from.portion_mo_price * index_to.index_mo / index_from.index_mo if index_from.index_mo else 0
+        part_lme = seller_from.portion_lme_price * index_to.index_lme / index_from.index_lme if index_from.index_lme else 0
 
-        return part_meps + part_mo + part_lme
+        ret = {
+            'price': part_meps + part_mo + part_lme,
+            'part_meps': part_meps,
+            'part_mo': part_mo,
+            'part_lme': part_lme,
+        }
+        return ret
 
     def _get_current_index(self, date=None):
         if date is None:
             date = fields.Date.context_today(self)
-        return self.env["phi_purchase_price_index.purchase.index"].search([('date_from', '<=', date),('state', '=', 'done')], order='date_from desc', limit=1)
+        return self.env["phi_purchase_price_index.purchase.index"].search([('date_from', '<=', date)], order='date_from desc', limit=1)
 
     def action_apply(self):
         index_draft = self.env["phi_purchase_price_index.purchase.index"].search([('state', '=', 'draft'),('date_from', '<', self.date_from)])
