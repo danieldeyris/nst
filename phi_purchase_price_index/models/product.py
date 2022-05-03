@@ -74,9 +74,9 @@ class SupplierInfo(models.Model):
 
     is_first_price_index = fields.Boolean("First price index", compute="_compute_is_first_price_index")
 
-    _sql_constraints = [
-        ('check_portions_total', 'check(portion_meps + portion_mo + portion_lme) = 100 or not purchase_price_index)', 'Le total des indices doit être égal à 100'),
-    ]
+    # _sql_constraints = [
+    #     ('check_portions_total', 'check(portion_meps + portion_mo + portion_lme) = 100 or not purchase_price_index)', 'Le total des indices doit être égal à 100'),
+    # ]
 
     @api.onchange('portion_meps_price')
     def _onchange_portion_meps_price(self):
