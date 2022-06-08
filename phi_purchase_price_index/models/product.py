@@ -26,6 +26,9 @@ class ProductTemplate(models.Model):
                     if len(seller) > 1:
                         raise UserError(_('Vous ne pouvez pas avoir plusieurs prix avec une date de début vide pour un meme couple fournisseur/quantité minimale'))
 
+                    if not seller.purchase_index_id:
+                        seller.purchase_index_id = self.env["phi_purchase_price_index.purchase.index"]._get_current_index()
+
                     for index in self.env["phi_purchase_price_index.purchase.index"].search([('date_from', '>', seller.purchase_index_id.date_from)]).sorted(lambda t: t.date_from):
                         prices = index._calculate_price_index(seller)
                         seller_new = self.seller_ids.filtered(lambda s: s.name.id == vendor.id and s.min_qty == min_qty and s.purchase_index_id.id == index.id)
@@ -38,6 +41,9 @@ class ProductTemplate(models.Model):
                                 'portion_meps_price': prices.get("part_meps"),
                                 'portion_mo_price': prices.get("part_mo"),
                                 'portion_lme_price': prices.get("part_lme"),
+                                'portion_meps': prices.get("portion_meps"),
+                                'portion_mo': prices.get("portion_mo"),
+                                'portion_lme': prices.get("portion_lme"),
                             })
                         else:
                             seller_new.write({
@@ -47,6 +53,9 @@ class ProductTemplate(models.Model):
                                 'portion_meps_price': prices.get("part_meps"),
                                 'portion_mo_price': prices.get("part_mo"),
                                 'portion_lme_price': prices.get("part_lme"),
+                                'portion_meps': prices.get("portion_meps"),
+                                'portion_mo': prices.get("portion_mo"),
+                                'portion_lme': prices.get("portion_lme"),
                             })
                         if not seller.date_end or seller.date_end >= index.date_from:
                             seller.date_end = index.date_from - timedelta(days=1)
@@ -75,31 +84,20 @@ class SupplierInfo(models.Model):
     is_first_price_index = fields.Boolean("First price index", compute="_compute_is_first_price_index")
 
     # _sql_constraints = [
-    #     ('check_portions_total', 'check(portion_meps + portion_mo + portion_lme) = 100 or not purchase_price_index)', 'Le total des indices doit être égal à 100'),
+    #     ('check_portions_total', 'check(portion_meps + portion_mo + portion_lme) >= 99 or not purchase_price_index)', 'Le total des indices doit être égal à 100'),
     # ]
 
-    @api.onchange('portion_meps_price')
+    @api.onchange('portion_meps_price','portion_mo_price','portion_lme_price')
     def _onchange_portion_meps_price(self):
         for line in self:
+            line.price = line.portion_meps_price + line.portion_mo_price + line.portion_lme_price
             if line.price:
                 line.portion_meps = round(line.portion_meps_price / line.price * 100 , 2)
-            else:
-                line.portion_meps = 0
-
-    @api.onchange('portion_mo_price')
-    def _onchange_portion_mo_price(self):
-        for line in self:
-            if line.price:
                 line.portion_mo = round(line.portion_mo_price / line.price * 100, 2)
-            else:
-                line.portion_mo = 0
-
-    @api.onchange('portion_lme_price')
-    def _onchange_portion_lme_price(self):
-        for line in self:
-            if line.price:
                 line.portion_lme = round(line.portion_lme_price / line.price * 100, 2)
             else:
+                line.portion_meps = 0
+                line.portion_mo = 0
                 line.portion_lme = 0
 
     @api.onchange('date_start')
@@ -121,14 +119,38 @@ class SupplierInfo(models.Model):
 
         res = super(SupplierInfo, self).create(vals)
 
-        if res.product_tmpl_id and not res.date_start:
+        if res.purchase_price_index and not res.date_start:
             res.product_tmpl_id.update_price_index()
 
         return res
 
     def write(self, vals):
         res = super().write(vals)
-        if 'portion_meps' in vals or 'portion_mo' in vals or 'portion_lme' in vals or 'purchase_index_id' in vals or 'price' in vals:
-            if not self.date_start:
-                self.product_tmpl_id.update_price_index()
+        if 'price' in vals:
+            if self.purchase_price_index and not self.date_start:
+                self.update_price_index()
         return res
+
+    def update_price_index(self):
+        self.ensure_one()
+        current_index = self
+        for index in self.env["phi_purchase_price_index.purchase.index"].search([('date_from', '>', self.purchase_index_id.date_from)]).sorted(lambda t: t.date_from):
+            seller = self.product_tmpl_id.seller_ids.filtered(lambda s: s.name.id == self.name.id  and s.min_qty == self.min_qty and s.purchase_index_id.id == index.id)
+            if seller:
+                prices = index._calculate_price_index(current_index)
+                seller.price = prices.get("price")
+                seller.portion_meps_price = prices.get("part_meps")
+                seller.portion_mo_price = prices.get("part_mo")
+                seller.portion_lme_price =prices.get("part_lme")
+                seller.portion_meps = prices.get("portion_meps")
+                seller.portion_mo = prices.get("portion_mo")
+                seller.portion_lme = prices.get("portion_lme")
+                current_index = seller
+
+    # def unlink(self):
+    #     for line in self:
+    #         if line.purchase_price_index and line.date_start:
+    #             raise UserError('Vous ne pouvez pas supprimer cet indice, supprimez le premier indice')
+    #         if line.purchase_price_index and not line.date_start:
+    #             line.product_tmpl_id.seller_ids.filtered(lambda s: s.name.id == line.name.id and s.min_qty == line.min_qty and s.purchase_index_id.id != line.purchase_index_id.id).unlink()
+    #     res = super(SupplierInfo, self).unlink()
