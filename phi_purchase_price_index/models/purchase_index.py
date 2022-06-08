@@ -72,6 +72,9 @@ class PurchaseIndex(models.Model):
                 'part_meps': 0,
                 'part_mo': 0,
                 'part_lme': 0,
+                'portion_meps': 0,
+                'portion_mo': 0,
+                'portion_lme': 0,
             }
 
     @staticmethod
@@ -84,16 +87,33 @@ class PurchaseIndex(models.Model):
                 'part_meps': 0,
                 'part_mo': 0,
                 'part_lme': 0,
+                'portion_meps': 0,
+                'portion_mo': 0,
+                'portion_lme': 0,
             }
         part_meps = seller_from.portion_meps_price * index_to.index_meps / index_from.index_meps if index_from.index_meps else 0
         part_mo = seller_from.portion_mo_price * index_to.index_mo / index_from.index_mo if index_from.index_mo else 0
         part_lme = seller_from.portion_lme_price * index_to.index_lme / index_from.index_lme if index_from.index_lme else 0
 
+        price = part_meps + part_mo + part_lme
+
+        if price:
+            portion_meps = round(part_meps / price * 100, 2)
+            portion_mo = round(part_mo / price * 100, 2)
+            portion_lme = round(part_lme / price * 100, 2)
+        else:
+            portion_meps = 0
+            portion_mo = 0
+            portion_lme = 0
+
         ret = {
-            'price': part_meps + part_mo + part_lme,
+            'price': price,
             'part_meps': part_meps,
             'part_mo': part_mo,
             'part_lme': part_lme,
+            'portion_meps': portion_meps,
+            'portion_mo': portion_mo,
+            'portion_lme': portion_lme,
         }
         return ret
 
