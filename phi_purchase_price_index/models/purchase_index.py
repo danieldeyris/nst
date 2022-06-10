@@ -16,6 +16,7 @@ class PurchaseIndex(models.Model):
     index_meps = fields.Integer(string="MEPS", help="Indice matière premières", default=0, required=True)
     index_mo = fields.Integer(string="MO", help="Indice main d'oeuvre", default=0, required=True)
     index_lme = fields.Integer(string="LME", help="Indice traitement de surface", default=0, required=True)
+    is_locked = fields.Boolean('Vérrouillé', default=False)
 
     state = fields.Selection([('draft', 'Brouillon'), ('done', 'Traité')], 'Statut', readonly=True, copy=False, default='draft', required=True)
     display_name = fields.Char(compute='_compute_display_name')

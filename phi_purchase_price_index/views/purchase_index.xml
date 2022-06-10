@@ -8,10 +8,11 @@
                 <form string="Indices Achat">
                     <sheet>
                         <group>
-                            <field name="date_from" />
-                            <field name="index_meps"/>
-                            <field name="index_mo"/>
-                            <field name="index_lme"/>
+                            <field name="date_from" attrs="{'readonly': [('is_locked', '=', True)]}"/>
+                            <field name="index_meps" attrs="{'readonly': [('is_locked', '=', True)]}"/>
+                            <field name="index_mo" attrs="{'readonly': [('is_locked', '=', True)]}"/>
+                            <field name="index_lme" attrs="{'readonly': [('is_locked', '=', True)]}"/>
+                            <field name="is_locked" widget="boolean_toggle" groups="purchase.group_purchase_manager"/>
                         </group>
                     </sheet>
                 </form>
@@ -23,14 +24,14 @@
             <field name="model">phi_purchase_price_index.purchase.index</field>
             <field name="arch" type="xml">
                 <tree string="Indices Achat" editable="top">
-                    <field name="date_from"/>
-                    <field name="index_meps"/>
-                    <field name="index_mo"/>
-                    <field name="index_lme"/>
+                    <field name="date_from" attrs="{'readonly': [('is_locked', '=', True)]}"/>
+                    <field name="index_meps" attrs="{'readonly': [('is_locked', '=', True)]}"/>
+                    <field name="index_mo" attrs="{'readonly': [('is_locked', '=', True)]}"/>
+                    <field name="index_lme" attrs="{'readonly': [('is_locked', '=', True)]}"/>
+                    <field name="is_locked"  widget="boolean_toggle" groups="purchase.group_purchase_manager"/>
                 </tree>
             </field>
         </record>
-
 
         <record model="ir.actions.act_window" id="phi_purchase_price_index.purchase_index_action_window">
             <field name="name">Indices Achat</field>
