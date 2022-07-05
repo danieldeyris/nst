@@ -13,7 +13,7 @@
     'author': "Phidias",
     'website': "http://www.phidias.fr",
     'category': 'Uncategorized',
-    'version': '14.0.0.29',
+    'version': '14.0.0.30',
 
     # any module necessary for this one to work correctly
     'depends': [
