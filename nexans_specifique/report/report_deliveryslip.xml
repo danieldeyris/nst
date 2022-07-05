@@ -23,7 +23,22 @@
                 <strong>Commercial invoice:</strong>
                 <p t-field="o.commercial_invoice"/>
             </div>
+            <div t-if="o.total_gross_weight_print" class="col-auto" name="div_total_gross_weight_print">
+                <strong>Total Gross Weight:</strong>
+                <p t-field="o.total_gross_weight_print"/>
+            </div>
         </xpath>
+
+        <xpath expr="/t/t/t/div/h2" position="before">
+            <div class="row address">
+              <div class="col-5">
+                  <strong>Delivery address</strong>
+                <div t-field="o.partner_order_id" t-options-no_marker="1" t-options-widget="'contact'"/>
+              </div>
+              <div class="col-7 offset-2"/>
+            </div>
+            <br/>
+          </xpath>
 
         <xpath expr="//th[@name='th_sml_quantity']" position="after">
             <th name="th_sml_country">
