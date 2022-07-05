@@ -22,7 +22,10 @@ class PurchaseOrder(models.Model):
             if not order.incoterm_id:
                 order.incoterm_full_name = False
             else:
-                order.incoterm_full_name = "\n".join([order.incoterm_id.code, order.incoterm_description])
+                if order.incoterm_description:
+                    order.incoterm_full_name = "\n".join([order.incoterm_id.code, order.incoterm_description])
+                else:
+                    order.incoterm_full_name = order.incoterm_id.code
 
     @api.onchange('incoterm_id', 'partner_id', 'partner_shipping_id', 'warehouse_id')
     def get_incoterm_description(self):

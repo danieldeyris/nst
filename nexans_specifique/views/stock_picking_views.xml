@@ -12,6 +12,11 @@
           <xpath expr="//field[@name='group_id']" position="after">
             <field name="commercial_invoice" />
           </xpath>
+          <xpath expr="//field[@name='carrier_id']" position="after">
+              <field name="incoterm" />
+              <field name="incoterm_description" />
+              <field name="total_gross_weight" />
+          </xpath>
         </field>
     </record>
 
