@@ -60,13 +60,13 @@
                                     <strong>Project:</strong>
                                     <p t-field="o.analytic_account_id"/>
                                 </div>
-                                <div t-if="o.origin" class="col-auto" name="div_origin">
-                                    <strong>Order:</strong>
-                                    <p t-field="o.origin"/>
+                                <div>
+                                    <strong>Delivery:</strong>
+                                    <p t-field="o.name"/>
                                 </div>
                                 <div class="col-auto" name="div_date_done">
                                     <strong>Date:</strong>
-                                    <p t-field="o.date_done"/>
+                                    <p t-field="o.date_done" widget="date"/>
                                 </div>
                             </div>
                             <table class="table table-sm" t-if="o.move_line_ids and o.move_ids_without_package">
