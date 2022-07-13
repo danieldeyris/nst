@@ -13,7 +13,7 @@
     'author': "Phidias",
     'website': "http://www.phidias.fr",
     'category': 'Uncategorized',
-    'version': '14.0.0.31',
+    'version': '14.0.0.32',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -69,6 +69,7 @@
         'sale_force_invoiced',
         'phi_sale_downpayment_proportionnal',
         'phi_sale_customer_location',
+        'purchase_requisition',
     ],
     "data": [
         'views/crm_lead_views.xml',
