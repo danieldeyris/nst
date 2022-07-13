@@ -1,0 +1,144 @@
+<odoo>
+
+        <record id="action_report_picking_commercial_invoice" model="ir.actions.report">
+            <field name="name">Commercial invoice</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">nexans_specifique.report_picking_commercial_invoice</field>
+            <field name="report_file">nexans_specifique.report_picking_commercial_invoice</field>
+            <field name="print_report_name">'Commercial invoice - %s - %s' % (object.partner_id.name or '', object.name)</field>
+            <field name="binding_model_id" ref="model_stock_picking"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <template id="report_picking_commercial_invoice">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h1>
+                                <span>Commercial Invoice : </span>
+                                <span t-field="o.commercial_invoice"/>
+                            </h1>
+                            <div class="row">
+                                <div class="col-6" name="div_outgoing_address">
+                                    <div>
+                                        <span><strong>From:</strong></span>
+                                        <div t-field="o.company_id.partner_id"
+                                            t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                                    </div>
+                                </div>
+                                <div class="col-5 offset-1" name="div_incoming_address">
+                                    <span><strong>To:</strong></span>
+                                    <div t-if="o.partner_order_id" name="partner_header">
+                                        <div t-field="o.partner_order_id"
+                                           t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                                        <p t-if="o.sudo().partner_order_id.vat"><t t-esc="o.company_id.country_id.vat_label or 'Tax ID'"/>: <span t-field="o.sudo().partner_order_id.vat"/></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col-6" name="div_outgoing_address">
+                                    <div>
+                                        <span><strong>Trade terms</strong></span><br/>
+                                        <span t-field="o.incoterm"/><br/>
+                                        <span t-field="o.incoterm_description"/>
+                                    </div>
+                                </div>
+                                <div class="col-5 offset-1" name="div_incoming_address">
+                                    <span><strong>Final consignee</strong></span>
+                                    <div t-if="o.partner_id" name="partner_header">
+                                        <div t-field="o.partner_id"
+                                           t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row mt48 mb32">
+                                <div t-if="o.analytic_account_id" class="col-auto" name="div_analytic_account_id">
+                                    <strong>Project:</strong>
+                                    <p t-field="o.analytic_account_id"/>
+                                </div>
+                                <div>
+                                    <strong>Delivery:</strong>
+                                    <p t-field="o.name"/>
+                                </div>
+                                <div class="col-auto" name="div_date_done">
+                                    <strong>Date:</strong>
+                                    <p t-field="o.date_done" widget="date"/>
+                                </div>
+                            </div>
+                            <table class="table table-sm" t-if="o.move_line_ids and o.move_ids_without_package">
+                                <t t-set="has_barcode" t-value="any(move_line.product_id and move_line.product_id.sudo().barcode or move_line.package_id for move_line in o.move_line_ids)"/>
+                                <t t-set="has_serial_number" t-value="any(move_line.lot_id or move_line.lot_name for move_line in o.move_line_ids)" groups="stock.group_production_lot"/>
+                                <thead>
+                                    <tr>
+                                        <th name="th_hs_code">
+                                            <strong>HS code</strong>
+                                        </th>
+                                        <th name="th_product">
+                                            <strong>Product</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Quantity</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Origin</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Unit Price</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Amount</strong>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.move_ids_without_package" t-as="move">
+                                        <!-- In case you come across duplicated lines, ask NIM or LAP -->
+                                        <t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
+                                            <tr>
+                                                <td>
+                                                    <span t-field="ml.product_id.hs_code"/><br/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="ml.product_id.display_name"/><br/>
+                                                </td>
+                                                <td>
+                                                    <span t-if="o.state != 'done'" t-field="ml.product_uom_qty"/>
+                                                    <span t-if="o.state == 'done'" t-field="ml.qty_done"/>
+                                                    <span t-field="ml.product_uom_id" groups="uom.group_uom"/>
+
+                                                </td>
+                                                <td>
+                                                    <span t-field="ml.product_id.intrastat_origin_country_id"/><br/>
+                                                </td>
+                                                <td  class="text-right">
+                                                    <span t-field="ml.price_reduce"/><br/>
+                                                </td>
+                                                <td  class="text-right">
+                                                    <span t-field="ml.sale_price_subtotal"/><br/>
+                                                </td>
+                                              </tr>
+                                        </t>
+                                    </t>
+                                  </tbody>
+                                    <tfoot>
+                                        <tr>
+                                             <td colspan="5" class="text-right">
+                                                <strong>Total Amount</strong>
+                                            </td>
+                                            <td class="text-right">
+                                                <strong><span t-field="o.amount_subtotal"/></strong>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+</odoo>

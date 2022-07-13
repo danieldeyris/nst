@@ -13,7 +13,7 @@
     'author': "Phidias",
     'website': "http://www.phidias.fr",
     'category': 'Uncategorized',
-    'version': '14.0.0.27',
+    'version': '14.0.0.32',
 
     # any module necessary for this one to work correctly
     'depends': [
@@ -68,6 +68,8 @@
         'purchase_force_invoiced',
         'sale_force_invoiced',
         'phi_sale_downpayment_proportionnal',
+        'phi_sale_customer_location',
+        'purchase_requisition',
     ],
     "data": [
         'views/crm_lead_views.xml',
@@ -77,5 +79,7 @@
         'report/sale_order_report_templates.xml',
         'report/report_deliveryslip.xml',
         'views/stock_picking_views.xml',
+        'report/report_commercial_invoice.xml',
+        'data/stock_sequence_data.xml',
     ]
 }

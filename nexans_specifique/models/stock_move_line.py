@@ -10,6 +10,24 @@ class StockMoveLine(models.Model):
     weight_net = fields.Float("Weight", compute="_compute_weight_net", digits='Stock Weight')
     weight_gross = fields.Float("Weight Gross", digits='Stock Weight')
     weight_gross_print = fields.Float("Gross Weight", compute="_compute_weight_gross", digits='Stock Weight')
+    sale_line = fields.Many2one(
+        related="move_id.sale_line_id", readonly=True, string="Related order line"
+    )
+    currency_id = fields.Many2one(
+        related="sale_line.currency_id", readonly=True, string="Sale Currency"
+    )
+    sale_price_unit = fields.Float(
+        related="sale_line.price_unit", readonly=True, string="Sale price unit"
+    )
+    price_reduce = fields.Float(
+        related="sale_line.price_reduce", readonly=True, string="Sale price unit"
+    )
+
+    sale_price_subtotal = fields.Monetary(
+        compute="_compute_sale_order_line_fields",
+        string="Price subtotal",
+        compute_sudo=True,
+    )
 
     def _compute_weight_gross(self):
         for line in self:
@@ -38,3 +56,8 @@ class StockMoveLine(models.Model):
                 aggregated_move_lines[line_key]['weight'] += move_line.weight_net
                 aggregated_move_lines[line_key]['weight_gross'] += move_line.weight_gross_print
         return aggregated_move_lines
+
+    def _compute_sale_order_line_fields(self):
+        for line in self:
+            quantity = line.qty_done or line.product_qty
+            line.sale_price_subtotal = line.price_reduce * quantity
